@@ -226,7 +226,7 @@ void CLIENTFX_INSTANCE::DeleteFX(CLinkListNode<FX_LINK> *pDelNode)
 	if( !pDelNode ) 
 		return;
 
-	CBaseFX* pDelFX = pDelNode->m_Data.m_pFX;
+	CBaseFX* pDelFX = dynamic_cast<CBaseFX*>(pDelNode->m_Data.m_pFX);
 
 	if(pDelFX)
 	{
@@ -246,7 +246,7 @@ void CLIENTFX_INSTANCE::DeleteFX(CLinkListNode<FX_LINK> *pDelNode)
 		}
 
 		// Give the FX a chance to clean itself up
-		pDelFX->Term();
+		// pDelFX->Term();
 		CClientFXDB::GetSingleton().DeleteEffect(pDelFX);
 	}
 

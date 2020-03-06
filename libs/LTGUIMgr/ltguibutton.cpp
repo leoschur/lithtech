@@ -71,11 +71,11 @@ LTBOOL CLTGUIButton::Create (	uint32 nCommandID,
 
 void CLTGUIButton::Destroy()
 {
-	if (LTNULL != m_pText)
+	if (m_pText && g_pFontManager)
 	{
 		g_pFontManager->DestroyPolyString(m_pText);
-		m_pText = LTNULL;
 	}
+	m_pText = nullptr;
 }
 
 
