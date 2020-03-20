@@ -7,6 +7,12 @@
 #include "CMoveMgr.h"
 #include "WinUtil.h"
 
+#ifndef __LINUX
+  #define GET_UINT32 "%s %lu"
+#else
+  #define GET_UINT32 "%s %u"
+#endif
+
 #define MAX_TAG_SIZE		(64)
 #define MAX_LINE_SIZE		(2048)
 
@@ -195,10 +201,6 @@ bool CClientFXDB::Init(ILTClient* pLTClient)
 
 void CClientFXDB::Term()
 {
-	//empty out our types
-	debug_deletea(m_pEffectTypes);
-	m_pEffectTypes		= NULL;
-	m_nNumEffectTypes	= 0;
 
 	// Delete all the FX groups
 	CLinkListNode<FX_GROUP *> *pGroupNode = m_collGroupFX.GetHead();
@@ -221,6 +223,11 @@ void CClientFXDB::Term()
 		pGroupNode = pGroupNode->m_pNext;
 	}
 	m_collGroupFX.RemoveAll();
+
+	//empty out our types
+	debug_deletea(m_pEffectTypes);
+	m_pEffectTypes		= NULL;
+	m_nNumEffectTypes	= 0;
 
 	UnloadFxDll();
 }
@@ -356,6 +363,11 @@ bool CClientFXDB::LoadFxDll()
 	return true;
 }
 
+bool CClientFXDB::IsActive()
+{
+	return (m_hDLLInst != nullptr);
+}
+
 //unloads the effect DLL
 void CClientFXDB::UnloadFxDll()
 {
@@ -482,7 +494,7 @@ bool CClientFXDB::ReadFXKey( bool bText, ILTStream* pFxFile, float fTotalTime, F
 	// Read in the key ID
 	if( bText )
 	{
-		ReadTextFile( pFxFile, "%s %lu", &pKey->m_dwID );
+		ReadTextFile( pFxFile, GET_UINT32, &pKey->m_dwID );
 	}
 	else
 	{
@@ -494,7 +506,7 @@ bool CClientFXDB::ReadFXKey( bool bText, ILTStream* pFxFile, float fTotalTime, F
 	if( bText )
 	{
 		ReadTextFile( pFxFile, "%s %i", &ls.m_bLinked );
-		ReadTextFile( pFxFile, "%s %lu", &ls.m_dwLinkedID );
+		ReadTextFile( pFxFile, GET_UINT32, &ls.m_dwLinkedID );
 
 		//read in the linked node name but make sure that it is cleared out first
 		ls.m_sLinkedNodeName[0] = '\0';
@@ -539,7 +551,7 @@ bool CClientFXDB::ReadFXKey( bool bText, ILTStream* pFxFile, float fTotalTime, F
 	uint32 nKeyRepeats = 0;
 	if( bText )
 	{
-		ReadTextFile( pFxFile, "%s %lu", &nKeyRepeats );
+		ReadTextFile( pFxFile, GET_UINT32, &nKeyRepeats );
 	}
 	else
 	{
@@ -552,7 +564,7 @@ bool CClientFXDB::ReadFXKey( bool bText, ILTStream* pFxFile, float fTotalTime, F
 	LTFLOAT	fDummy;
 	if( bText )
 	{
-		ReadTextFile( pFxFile, "%s %lu", &dwDummy );
+		ReadTextFile( pFxFile, GET_UINT32, &dwDummy );
 		ReadTextFile( pFxFile, "%s %f", &fDummy );
 		ReadTextFile( pFxFile, "%s %f", &fDummy );
 	}
@@ -567,7 +579,7 @@ bool CClientFXDB::ReadFXKey( bool bText, ILTStream* pFxFile, float fTotalTime, F
 	uint32 dwNumProps;
 	if( bText )
 	{
-		ReadTextFile( pFxFile, "%s %lu", &dwNumProps );
+		ReadTextFile( pFxFile, GET_UINT32, &dwNumProps );
 	}
 	else
 	{
@@ -639,10 +651,10 @@ bool CClientFXDB::ReadFXGroup( bool bText, ILTStream* pFxFile, FX_GROUP* pFxGrou
 		// Read in the name of this FX group
 		ReadTextFile( pFxFile, "%s %s", pFxGroup->m_sName );
 		
-		ReadTextFile( pFxFile, "%s %lu", &dwNumFx );
+		ReadTextFile( pFxFile, GET_UINT32, &dwNumFx );
 		
 		// Read in the phase length
-		ReadTextFile( pFxFile, "%s %lu", &dwPhaseLen );
+		ReadTextFile( pFxFile, GET_UINT32, &dwPhaseLen );
 	}
 	else
 	{
@@ -733,36 +745,35 @@ bool CClientFXDB::ReadFXGroups( bool bText, ILTStream* pFxFile, CLinkList<FX_GRO
 
 	if( bText )
 	{
-		ReadTextFile( pFxFile, "%s %lu", &dwNumGroups );
+		ReadTextFile( pFxFile, GET_UINT32, &dwNumGroups );
 	}
 	else
 	{
 		pFxFile->Read(&dwNumGroups, sizeof(uint32));
 	}
 
-	//allocate a working buffer that keys can read properties into
-	static const uint32		knMaxKeyProps = 512;
-	FX_PROP*				pPropBuffer = debug_newa(FX_PROP, knMaxKeyProps);
-
-	if(!pPropBuffer)
-		return false;
-
-	for( uint32 i = 0; i < dwNumGroups; i ++ )
 	{
-		// Create a new group.
-		FX_GROUP *pFxGroup = debug_new( FX_GROUP );
+		//allocate a working buffer that keys can read properties into
+		static const uint32		knMaxKeyProps = 512;
+		FX_PROP pPropBuffer[512];
+		memset(pPropBuffer, 0, sizeof(pPropBuffer));
 
-		if( !ReadFXGroup( bText, pFxFile, pFxGroup, pPropBuffer, knMaxKeyProps ))
-		{
-			debug_deletea(pPropBuffer);
+		if(!pPropBuffer)
 			return false;
+
+		for( uint32 i = 0; i < dwNumGroups; i ++ )
+		{
+			// Create a new group.
+			FX_GROUP *pFxGroup = debug_new( FX_GROUP );
+
+			if( !ReadFXGroup( bText, pFxFile, pFxGroup, pPropBuffer, knMaxKeyProps ))
+			{
+				return false;
+			}
+
+			collGroupFx.AddTail(pFxGroup);
 		}
-
-		collGroupFx.AddTail(pFxGroup);
-	}
-
-	//free our working buffer
-	debug_deletea(pPropBuffer);
+	} //free our working buffer
 
 	return true;
 }

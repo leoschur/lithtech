@@ -30,7 +30,7 @@
 		};
 
 		// Enumerations
-		enum eDataType
+		enum eDataType : int
 		{
 			STRING,
 			INTEGER,

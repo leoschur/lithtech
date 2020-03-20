@@ -153,6 +153,8 @@ public:
 	//finds the data for creating a specific effect key
 	FX_REF*							FindFX(const char *sName);
 
+	bool							IsActive();
+
 private:
 
 	int32							FindFXID(const char *sName);
