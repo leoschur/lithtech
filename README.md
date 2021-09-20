@@ -24,7 +24,7 @@ Windows screenshot:
 
 Linux screenshot:
 
-![NOLF2 using dxvk-native](https://i.imgur.com/b1hV8Fb.png)
+![NOLF2 using dxvk-native](https://imgur.com/Xdb713u.png)
 ![LT on Linux](https://imgur.com/LOpCNfa.png)
 
 Requirements
