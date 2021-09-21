@@ -179,7 +179,10 @@ uint32 CMenuSystem::OnCommand(uint32 nCommand, uint32 nParam1, uint32 nParam2)
 		}
 	case MC_EXIT:
 		{
-            g_pLTClient->Shutdown();
+			g_pLTClient->Shutdown();
+			SDL_Event evt;
+			evt.quit = {SDL_QUIT, SDL_GetTicks()};
+			SDL_PushEvent(&evt);
 			break;
 		}
 #ifdef _TRON_E3_DEMO
