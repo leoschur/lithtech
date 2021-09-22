@@ -118,7 +118,7 @@ struct CProvider
 	CProvider *	m_pNextProvider;
 };
 
-struct CSample
+struct SoundSample
 {
 	union
 	{
@@ -466,12 +466,12 @@ private:
 	CProvider 	m_3DProvider;
 	uint8		m_nNum3DSamples;
 	uint8		m_nMax3DSamples;
-	CSample *	m_p3DSampleList;
+	SoundSample *	m_p3DSampleList;
 	LTList		m_3DFreeSampleList;
 
 	uint8		m_nNumSWSamples;
 	uint8		m_nMaxSWSamples;
-	CSample *	m_pSWSampleList;
+	SoundSample *	m_pSWSampleList;
 	LTList		m_SWFreeSampleList;
 
 	ObjectBank< CSoundBuffer > m_SoundBufferBank;
