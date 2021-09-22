@@ -846,7 +846,7 @@ LTRESULT CSoundMgr::Create3DSamples()
     // Create an array of the 3D samples
     if (m_nMax3DSamples > 0)
     {
-        LT_MEM_TRACK_ALLOC(m_p3DSampleList = new CSample[m_nMax3DSamples],LT_MEM_TYPE_SOUND);
+        LT_MEM_TRACK_ALLOC(m_p3DSampleList = new SoundSample[m_nMax3DSamples],LT_MEM_TYPE_SOUND);
 
         for (nSample = 0; nSample < m_nMax3DSamples; nSample++)
         {
@@ -938,7 +938,7 @@ LTRESULT CSoundMgr::CreateSWSamples()
     // Create an array of the SW samples
     if (m_nMaxSWSamples > 0)
     {
-        LT_MEM_TRACK_ALLOC(m_pSWSampleList = new CSample[m_nMaxSWSamples],LT_MEM_TYPE_SOUND);
+        LT_MEM_TRACK_ALLOC(m_pSWSampleList = new SoundSample[m_nMaxSWSamples],LT_MEM_TYPE_SOUND);
 
         for (nSample = 0; nSample < m_nMaxSWSamples; nSample++)
         {
@@ -1122,7 +1122,7 @@ CSoundBuffer *CSoundMgr::CreateBuffer(FileIdentifier &fileIdent)
 LTRESULT CSoundMgr::RemoveBuffer(CSoundBuffer &soundBuffer)
 {
     LTLink *pCur;
-    CSample *pSample;
+    SoundSample *pSample;
 
     dl_RemoveAt(&m_SoundBufferList, (LTLink *)soundBuffer.GetLink());
 
@@ -1132,7 +1132,7 @@ LTRESULT CSoundMgr::RemoveBuffer(CSoundBuffer &soundBuffer)
         pCur = m_3DFreeSampleList.m_Head.m_pNext;
         while (pCur != &m_3DFreeSampleList.m_Head)
         {
-            pSample = (CSample *)pCur->m_pData;
+            pSample = (SoundSample *)pCur->m_pData;
             pCur = pCur->m_pNext;
 
             if (!pSample || !pSample->m_h3DSample)
@@ -1930,14 +1930,14 @@ CSoundInstance *CSoundMgr::GetLinkStreamSoundInstance(HSTREAM hStream)
 HSAMPLE CSoundMgr::GetFreeSWSample()
 {
     LTLink *pLink;
-    CSample *pSample;
+    SoundSample *pSample;
 
     if (m_SWFreeSampleList.m_nElements > 0)
     {
         pLink = m_SWFreeSampleList.m_Head.m_pNext;
         dl_RemoveAt(&m_SWFreeSampleList, pLink);
         dl_TieOff(pLink);
-        pSample = (CSample *)pLink->m_pData;      
+        pSample = (SoundSample *)pLink->m_pData;
 
         return pSample->m_hSample;
     }
@@ -1958,7 +1958,7 @@ HSAMPLE CSoundMgr::GetFreeSWSample()
 H3DSAMPLE CSoundMgr::GetFree3DSample(CSoundInstance *pSoundInstance)
 {
     LTLink *pLink;
-    CSample *pSample, *pTestSample;
+    SoundSample *pSample, *pTestSample;
     LTVector vTestPos, vPos;
 
     H3DSAMPLE h3DSample;
@@ -1986,7 +1986,7 @@ H3DSAMPLE CSoundMgr::GetFree3DSample(CSoundInstance *pSoundInstance)
         pLink = m_3DFreeSampleList.m_Head.m_pPrev;
         while (pLink != &m_3DFreeSampleList.m_Head)
         {
-            pTestSample = (CSample *)pLink->m_pData;
+            pTestSample = (SoundSample *)pLink->m_pData;
 
             if (pTestSample)
             {
@@ -2015,7 +2015,7 @@ H3DSAMPLE CSoundMgr::GetFree3DSample(CSoundInstance *pSoundInstance)
         // If we didn't find one we like, then just choose the head.
         if (!pSample && m_3DFreeSampleList.m_Head.m_pNext)
         {
-            pSample = (CSample *)m_3DFreeSampleList.m_Head.m_pNext->m_pData;
+            pSample = (SoundSample *)m_3DFreeSampleList.m_Head.m_pNext->m_pData;
 
 			// Clear out the sample's buffer so we always re-init the sample.
 			g_pSoundSys->Set3DUserData(pSample->m_h3DSample, SAMPLE_BUFFER, LTNULL);
@@ -2033,7 +2033,7 @@ H3DSAMPLE CSoundMgr::GetFree3DSample(CSoundInstance *pSoundInstance)
     // If there is only one free sample left, then make sure it has had end called on it.
     if (m_3DFreeSampleList.m_nElements == 1 && m_3DFreeSampleList.m_Head.m_pNext)
     {
-        pSample = (CSample *)m_3DFreeSampleList.m_Head.m_pNext->m_pData;
+        pSample = (SoundSample *)m_3DFreeSampleList.m_Head.m_pNext->m_pData;
         if (pSample)
         {
             g_pSoundSys->End3DSample(pSample->m_h3DSample);
@@ -2054,8 +2054,7 @@ H3DSAMPLE CSoundMgr::GetFree3DSample(CSoundInstance *pSoundInstance)
 void CSoundMgr::ReleaseSWSample(HSAMPLE hSample)
 {
 	if (!g_pSoundSys) return;
-
-    CSample *pSample = (CSample*) g_pSoundSys->GetSampleUserData(hSample, SAMPLE_LISTITEM);
+    SoundSample *pSample = (SoundSample*) g_pSoundSys->GetSampleUserData(hSample, SAMPLE_LISTITEM);
 
     if (pSample)
         dl_AddTail(&m_SWFreeSampleList, &pSample->m_Link, pSample);
@@ -2073,7 +2072,7 @@ void CSoundMgr::Release3DSample(H3DSAMPLE h3DSample)
 {
 	if (!g_pSoundSys) return;
 
-    CSample *pSample = (CSample*) g_pSoundSys->Get3DUserData(h3DSample, SAMPLE_LISTITEM);
+    SoundSample *pSample = (SoundSample*) g_pSoundSys->Get3DUserData(h3DSample, SAMPLE_LISTITEM);
 
     if (pSample)
         dl_AddTail(&m_3DFreeSampleList, &pSample->m_Link, pSample);
