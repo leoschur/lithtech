@@ -15,6 +15,10 @@ if (ENABLE_DXVK)
 	link_directories(${DXVK_LIB_DIRS})
 endif()
 
+if (ENABLE_OPENAL)
+	add_definitions(-DUSE_OPENAL)
+endif(ENABLE_OPENAL)
+
 set(exec_src
 	../controlfilemgr/controlfilemgr.cpp
 	src/client_filemgr.cpp
@@ -219,9 +223,18 @@ else(WIN32)
 	../kernel/src/sys/linux/streamsim.cpp
 	../kernel/src/sys/linux/musicdriver.cpp
 	../kernel/src/sys/linux/input.cpp
-	../sound/src/sys/linux/sdl.cpp
     ${exec_src})
 endif(WIN32)
+
+if (ENABLE_OPENAL)
+	set(exec_src ${exec_src}
+	../sound/src/sys/openal/openal.cpp
+    )
+elseif (NOT WIN32)
+	set(exec_src ${exec_src}
+	../sound/src/sys/linux/sdl.cpp
+    )
+endif (ENABLE_OPENAL)
 
 if (WIN32 OR ENABLE_DXVK)
 	set(exec_src ${exec_src}
@@ -284,6 +297,15 @@ else(WIN32)
 		pthread)
 
 endif(WIN32)
+
+if (ENABLE_OPENAL)
+	include_directories(
+		${OPENAL_INCLUDEDIR}
+		${MPG123_INCLUDEDIR})
+	set(libs ${libs}
+		${OPENAL_LIBRARIES}
+		${MPG123_LIBRARIES})
+endif (ENABLE_OPENAL)
 
 if(ENABLE_DIRECTX)	# FIXME: set to find DirectX path
 	include_directories(../../libs/dshow

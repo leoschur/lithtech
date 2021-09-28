@@ -1996,6 +1996,9 @@ bool CLTDirectMusicMgr::InitDirectMusic()
 // Initialize the synthesizer
 bool CLTDirectMusicMgr::InitPerformance()
 {
+#ifdef USE_OPENAL
+	return 0;
+#else
 	HRESULT hr;
 
 	// setup synthesizer parameters
@@ -2054,6 +2057,7 @@ bool CLTDirectMusicMgr::InitPerformance()
 
 Done:
 	return SUCCEEDED( hr );
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
