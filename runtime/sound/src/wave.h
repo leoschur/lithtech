@@ -38,13 +38,13 @@ typedef PCMWAVEFORMAT       *PPCMWAVEFORMAT;
 #define _WAVEFORMATEX_
 typedef struct tWAVEFORMATEX
 {
-    unsigned short int    wFormatTag;        /* format type */
-    unsigned short int    nChannels;         /* number of channels (i.e. mono, stereo...) */
-    unsigned long int   nSamplesPerSec;    /* sample rate */
-    unsigned long int   nAvgBytesPerSec;   /* for buffer estimation */
-    unsigned short int    nBlockAlign;       /* block size of data */
-    unsigned short int    wBitsPerSample;    /* Number of bits per sample of mono data */
-    unsigned short int    cbSize;            /* The count in bytes of the size of
+    unsigned short wFormatTag;        /* format type */
+    unsigned short nChannels;         /* number of channels (i.e. mono, stereo...) */
+    unsigned  int nSamplesPerSec;    /* sample rate */
+    unsigned  int nAvgBytesPerSec;   /* for buffer estimation */
+    unsigned short nBlockAlign;       /* block size of data */
+    unsigned short wBitsPerSample;    /* Number of bits per sample of mono data */
+    unsigned short cbSize;            /* The count in bytes of the size of
                                     extra information (after cbSize) */
 
 } WAVEFORMATEX;
