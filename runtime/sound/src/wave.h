@@ -2,7 +2,7 @@
 #define __WAVE_H__
 
 
-#ifdef __LINUX
+#if defined(_LINUX) || defined(USE_OPENAL)
 
 #ifndef WAVE_FORMAT_PCM
 

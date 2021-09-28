@@ -245,8 +245,15 @@ void DisplaySoundSysError( const char* pcErrorString )
 
 #define TERM_MSG	"Execution may terminate..."
 
+#ifdef USE_OPENAL
+ILTSoundSys* copenal_MakeSoundSys();
+#endif
+
 ILTSoundSys* CWin32SoundFactory::MakeSoundSystem( const char* pcSoundSystemName )
 {
+#ifdef USE_OPENAL
+	return copenal_MakeSoundSys();
+#else
 	static char pcDefaultSoundSysName[1024] = { 0 };
 
 	// if no name provided, enumerate and choose the first
@@ -327,7 +334,7 @@ ILTSoundSys* CWin32SoundFactory::MakeSoundSystem( const char* pcSoundSystemName 
 	}
 	LT_MEM_TRACK_ALLOC(m_pSoundSysNodes = new soundSysNode_t( pcSoundSystemName, pSoundSys, m_pSoundSysNodes ),LT_MEM_TYPE_SOUND);
 	return pSoundSys;
-
+#endif
 }
 
 // ============================================================================
@@ -356,15 +363,22 @@ ILTSoundSys* CFooSoundFactory::MakeSoundSystem( const char* pcSoundSystemName )
 #ifdef __LINUX
 
 DECLARE_SOUND_FACTORY(Linux)
+#ifdef USE_OPENAL
+ILTSoundSys* copenal_MakeSoundSys();
+#else
 ILTSoundSys* csdl_MakeSoundSys();
-
+#endif
 bool CLinuxSoundFactory::FillSoundSystems( char* pcSoundSysNames, uint uiMaxStringLen )
 {
 	return true;
 }
 ILTSoundSys* CLinuxSoundFactory::MakeSoundSystem( const char* pcSoundSystemName )
 {
+#ifdef USE_OPENAL
+	return copenal_MakeSoundSys();
+#else
 	return csdl_MakeSoundSys();
+#endif
 }
 
 #ifdef PULSEAUDIO

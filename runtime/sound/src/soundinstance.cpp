@@ -723,8 +723,11 @@ LTRESULT CSoundInstance::AcquireStream( )
 	S32 nPos1, nPos2;
 	float fModPoint;
 	char szFileName[_MAX_PATH+1];
+	char* file_buf;
+	S32 file_len;
 	uint32 nFilePos, nFileSize;
 	S32 nPlayBackRate;
+	ILTStream* strm = NULL;
 
 	ASSERT( m_pSoundBuffer );
 	if( !m_pSoundBuffer )
@@ -733,13 +736,31 @@ LTRESULT CSoundInstance::AcquireStream( )
 	if( !m_hStream )
 	{
 		// Open the file directly.
-#ifndef __LINUX
+#if !defined(USE_OPENAL) && defined(_WINDOWS)
 		if( !df_GetRawInfo( m_pSoundBuffer->GetFileIdent( )->m_hFileTree,
 			m_pSoundBuffer->GetFileIdent( )->m_Filename, szFileName, _MAX_PATH, &nFilePos, &nFileSize ))
-			return LT_ERROR;
-#endif // __LINUX
-
+			{
+				return LT_ERROR;
+			}
 		m_hStream = GetSoundSys()->OpenStream( szFileName, nFilePos, GetClientILTSoundMgrImpl()->GetDigDriver( ), 0, 0 );
+#else
+		strcpy(szFileName, m_pSoundBuffer->GetFileIdent( )->m_Filename);
+		strm = df_Open(m_pSoundBuffer->GetFileIdent( )->m_hFileTree, szFileName, 0);
+		if (!strm)
+		{
+			return LT_ERROR;
+		}
+
+		file_len = strm->GetLen();
+		file_buf = new char[file_len];
+		strm->Read(file_buf, file_len);
+		strm->Release();
+
+		m_hStream = GetSoundSys()->OpenStream( szFileName, 0,
+			GetClientILTSoundMgrImpl()->GetDigDriver( ), file_buf, file_len );
+
+		delete [] file_buf;
+#endif
 
 		if( !m_hStream )
 		{
@@ -860,6 +881,9 @@ LTRESULT CSoundInstance::EndLoop( )
 	// Stop looping sound.
 	if( m_hSample )
 	{
+#ifdef USE_OPENAL
+		GetSoundSys()->StopSample(m_hSample);
+#endif
 		GetSoundSys()->SetSampleLoopBlock( m_hSample, 0, -1, false );
 		GetSoundSys()->SetSampleLoop( m_hSample, false );
 	}

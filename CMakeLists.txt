@@ -25,10 +25,12 @@ if(WIN32)
 option(ENABLE_D3D "Enable Direct3D" ON)
 option(ENABLE_DIRECTX "Enable DirectX" ON)
 option(ENABLE_DIRECTSHOW "Enable DirectShow" ON)
+option(ENABLE_OPENAL "Use OpenAL as audio backend" OFF)
 else(WIN32)
 option(ENABLE_OPENGL "Enable OpenGL 3.3" ${GL})
 option(ENABLE_VULKAN "Enable Vulkan" OFF)
 option(ENABLE_DXVK "Enable DXVK" ${VK})
+option(ENABLE_OPENAL "Use OpenAL as audio backend" ON)
 endif(WIN32)
 option(USE_INTERNAL_ZLIB "Use bundled zlib" ON)			# eventually want default to be OFF
 option(USE_INTERNAL_FREETYPE "Use bundled freetype" ON)	# eventually want default to be OFF
@@ -43,6 +45,11 @@ if (ENABLE_DXVK)
 	add_definitions(-DUSE_DXVK)
 	set(DXVK_INCLUDE_DIRS ${DXVK_INCLUDEDIR}/native/windows ${DXVK_INCLUDEDIR}/native/directx)
 	set(DXVK_LIB_DIRS ${DXVK_LIBDIR})
+endif()
+
+if (ENABLE_OPENAL AND NOT WIN32)
+	pkg_check_modules(OPENAL REQUIRED openal)
+	pkg_check_modules(MPG123 REQUIRED libmpg123)
 endif()
 
 if(ENABLE_D3D)
@@ -105,9 +112,9 @@ if(BUILD_ENGINE)
 		add_subdirectory(runtime/render_a/src/sys/d3d)	# LIB_D3DRender
 	endif(ENABLE_D3D)
 	 if(WIN32)
-        if(ENABLE_DIRECTX)
+        if(NOT ENABLE_OPENAL)
             add_subdirectory(runtime/sound/src/sys/s_dx8)	# DLL_SndDrvDX8
-        endif(ENABLE_DIRECTX)
+        endif(NOT ENABLE_OPENAL)
 
         if(ENABLE_DIRECTSHOW)
             add_subdirectory(libs/dshow)					# LIB_DShow

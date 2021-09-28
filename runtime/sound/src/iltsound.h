@@ -392,7 +392,7 @@ public:
 	virtual char*		LastError( void ) = 0;
 
 	// digital sound driver functions
-#ifndef __GNUC__	
+#if !defined(USE_OPENAL) && defined(_WINDOWS)
 	virtual sint32		WaveOutOpen( LHDIGDRIVER* phDriver, PHWAVEOUT* pphWaveOut, sint32 siDeviceId, WAVEFORMAT* pWaveFormat ) = 0;
 #else
 	virtual sint32		WaveOutOpen( LHDIGDRIVER* phDriver, PHWAVEOUT* pphWaveOut, sint32 siDeviceId, void* pWaveFormat ) = 0;
@@ -439,7 +439,7 @@ public:
 	virtual void		Start3DSample( LH3DSAMPLE hS ) = 0;
 	virtual void		Resume3DSample( LH3DSAMPLE hS ) = 0;
 	virtual void		End3DSample( LH3DSAMPLE hS ) = 0;
-#ifndef __GNUC__
+#if !defined(USE_OPENAL) && defined(_WINDOWS)
 	virtual sint32		Init3DSampleFromAddress( LH3DSAMPLE hS, void* pStart, uint32 uiLen, WAVEFORMATEX* pWaveFormat, sint32 siPlaybackRate, LTSOUNDFILTERDATA* pFilterData  ) = 0;
 #else
 	virtual sint32		Init3DSampleFromAddress( LH3DSAMPLE hS, void* pStart, uint32 uiLen, void* pWaveFormat, sint32 siPlaybackRate, LTSOUNDFILTERDATA* pFilterData  ) = 0;
@@ -474,7 +474,7 @@ public:
 	virtual void		SetSampleUserData( LHSAMPLE hS, uint32 uiIndex, uintptr_t siValue ) = 0;
 	virtual void		GetDirectSoundInfo( LHSAMPLE hS, PTDIRECTSOUND* ppDS, PTDIRECTSOUNDBUFFER* ppDSB ) = 0;
 	virtual void		SetSampleReverb( LHSAMPLE hS, float fReverb_level, float fReverb_reflect_time, float fReverb_decay_time ) = 0;
-#ifndef __GNUC__
+#if !defined(USE_OPENAL) && defined(_WINDOWS)
 	virtual sint32		InitSampleFromAddress( LHSAMPLE hS, void* pStart, uint32 uiLen, WAVEFORMATEX* pWaveFormat, sint32 siPlaybackRate, LTSOUNDFILTERDATA* pFilterData ) = 0;
 #else
 	virtual sint32		InitSampleFromAddress( LHSAMPLE hS, void* pStart, uint32 uiLen, void* pWaveFormat, sint32 siPlaybackRate, LTSOUNDFILTERDATA* pFilterData ) = 0;

@@ -1,5 +1,9 @@
 project(LIB_ILTSound)
 
+if (ENABLE_OPENAL)
+	add_definitions(-DUSE_OPENAL)
+endif(ENABLE_OPENAL)
+
 include_directories(src
 	../../sdk/inc)
 
