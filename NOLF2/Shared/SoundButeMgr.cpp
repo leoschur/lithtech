@@ -173,6 +173,7 @@ void CSoundButeMgr::Term()
 
 int CSoundButeMgr::GetSoundSetFromName(const char *szName) const
 {
+#ifndef __LINUX
 	// Look the name up in our index table.
 	IndexTable::const_iterator iter = m_IndexTable.find(szName);
 
@@ -188,6 +189,17 @@ int CSoundButeMgr::GetSoundSetFromName(const char *szName) const
 
 	// We didn't find it, return -1 to indicate failure.
 	return INVALID_SOUND_BUTE;
+#else
+	int i;
+	for (i = 0; i < m_nNumSoundButes; i++)
+	{
+		if (!strcmp(szName, m_pSoundFiles[i].m_szName))
+		{
+			return i;
+		}
+	}
+	return INVALID_SOUND_BUTE;
+#endif
 }
 
 //*********************************************************************************
