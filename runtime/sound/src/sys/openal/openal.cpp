@@ -1069,7 +1069,7 @@ public:
 	virtual void		Close3DProvider( LHPROVIDER hLib );
 	virtual void		Set3DProviderPreference( LHPROVIDER hLib, char* sName, void* pVal );
 	virtual void		Get3DProviderAttribute( LHPROVIDER hLib, char* sName, void* pVal );
-	virtual S32			Enumerate3DProviders( LHPROENUM* phNext, LHPROVIDER* phDest, char** psName);
+	virtual S32			Enumerate3DProviders( LHPROENUM* phNext, LHPROVIDER* phDest, const char** psName);
 	virtual S32			Get3DRoomType( LHPROVIDER hLib );
 	virtual void		Set3DRoomType( LHPROVIDER hLib, S32 siRoomType );
 
@@ -1368,15 +1368,15 @@ void COpenALSoundSys::Get3DProviderAttribute( LHPROVIDER hLib, char* sName, void
 	}
 }
 
-S32	COpenALSoundSys::Enumerate3DProviders( LHPROENUM* phNext, LHPROVIDER* phDest, char** psName)
+S32	COpenALSoundSys::Enumerate3DProviders( LHPROENUM* phNext, LHPROVIDER* phDest, const char** psName)
 {
 	int nCur = *phNext;
 	phNext[0] += 1;
 
 	if (nCur == NUM_PROVIDERS)
 	{
-		psName[0] = NULL;
-		phDest[0] = 0;
+		*psName = NULL;
+		*phDest = 0;
 		return 0;
 	}
 
@@ -1385,8 +1385,8 @@ S32	COpenALSoundSys::Enumerate3DProviders( LHPROENUM* phNext, LHPROVIDER* phDest
 		case 0:
 			//done to make CGameClientShell::InitSound happy and make CSoundMgr
 			//think we have a 3D sound provider
-			psName[0] = "DirectSound Hardware";
-			phDest[0] = 1;
+			*psName = "DirectSound Hardware";
+			*phDest = 1;
 		break;
 	}
 

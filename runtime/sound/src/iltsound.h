@@ -414,7 +414,7 @@ public:
 	virtual void		Close3DProvider( LHPROVIDER hLib ) = 0;
 	virtual void		Set3DProviderPreference( LHPROVIDER hLib, char* sName, void* pVal ) = 0;
 	virtual void		Get3DProviderAttribute( LHPROVIDER hLib, char* sName, void* pVal ) = 0;
-	virtual sint32		Enumerate3DProviders( LHPROENUM* phNext, LHPROVIDER* phDest, char** psName) = 0;
+	virtual sint32		Enumerate3DProviders( LHPROENUM* phNext, LHPROVIDER* phDest, const char** psName) = 0;
 
 	// 3d listener functions
 	virtual LH3DPOBJECT	Open3DListener( LHPROVIDER hLib ) = 0;
