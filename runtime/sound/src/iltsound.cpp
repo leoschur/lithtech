@@ -122,6 +122,10 @@ public:
 
 // ============================================================================
 
+#ifdef USE_OPENAL
+ILTSoundSys* copenal_MakeSoundSys();
+#endif
+
 #ifdef WIN32
 #ifndef __XBOX
 
@@ -245,10 +249,6 @@ void DisplaySoundSysError( const char* pcErrorString )
 
 #define TERM_MSG	"Execution may terminate..."
 
-#ifdef USE_OPENAL
-ILTSoundSys* copenal_MakeSoundSys();
-#endif
-
 ILTSoundSys* CWin32SoundFactory::MakeSoundSystem( const char* pcSoundSystemName )
 {
 #ifdef USE_OPENAL
@@ -363,9 +363,7 @@ ILTSoundSys* CFooSoundFactory::MakeSoundSystem( const char* pcSoundSystemName )
 #ifdef __LINUX
 
 DECLARE_SOUND_FACTORY(Linux)
-#ifdef USE_OPENAL
-ILTSoundSys* copenal_MakeSoundSys();
-#else
+#ifndef USE_OPENAL
 ILTSoundSys* csdl_MakeSoundSys();
 #endif
 bool CLinuxSoundFactory::FillSoundSystems( char* pcSoundSysNames, uint uiMaxStringLen )
