@@ -1,7 +1,7 @@
 To Run any current builds of Lithtech
 -------------------------------------
 
-* install DXVK-native (1.9.x) see [build_dxvk-native](https://gitlab.com/Katana-Steel/lith_docker/-/blob/master/build_dxvk.sh)
+* install DXVK-native (1.9.x) see [build_dxvk-native](https://gitlab.com/Katana-Steel/lith_docker/-/blob/master/build_dxvk.sh) or [get a release build](https://github.com/Joshua-Ashton/dxvk-native/releases)
 * grab a recent build from [Gitlab Pipelines](https://gitlab.com/Katana-Steel/lithtech/-/pipelines)
   * any would do, except the no dxvk (that is still missing the OpenGL renderer)
 * extract the archive
