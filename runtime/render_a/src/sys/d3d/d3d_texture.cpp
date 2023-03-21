@@ -365,15 +365,16 @@ bool CTextureManager::UploadRTexture(TextureData* pSrcTexture, uint32 iSrcLvl, R
 {
 	TextureMipData* pSrcMip = &pSrcTexture->m_Mips[iSrcLvl];
 	PFormat SrcFormat;
+	HRESULT hResult;
 	pSrcTexture->SetupPFormat(&SrcFormat);
-
 	D3DFORMAT D3DSrcFormat = QueryDDFormat1(pSrcTexture->m_Header.GetBPPIdent(), pSrcTexture->m_Header.m_IFlags);
+#ifndef _WINDOWS
+	RECT* pRect = nullptr;
+	D3DLOCKED_RECT LockedRect;
+#endif
 
 	if (pDstTexture->IsCubeMap())
 	{
-#ifndef _WINDOWS
-		return true;
-#else
 		// Cube map texture...
 		LPDIRECT3DCUBETEXTURE9 pD3DDstTexture = pDstTexture->m_pD3DCubeTexture;
 
@@ -388,28 +389,31 @@ bool CTextureManager::UploadRTexture(TextureData* pSrcTexture, uint32 iSrcLvl, R
 
 		for (uint32 i = 0; i < 6; ++i)
 		{
+#ifdef _WINDOWS
 			LPDIRECT3DSURFACE9 pDstSurface = nullptr;
 
 			pD3DDstTexture->GetCubeMapSurface((D3DCUBEMAP_FACES)i,iDstLvl,&pDstSurface);
 			if (!pDstSurface)
 				return false;
 
-			HRESULT hResult = D3DXLoadSurfaceFromMemory(pDstSurface,NULL,NULL,pSrcData,D3DSrcFormat,SrcPitch,NULL,&SrcRect,D3DX_FILTER_NONE,0);
+			hResult = D3DXLoadSurfaceFromMemory(pDstSurface,NULL,NULL,pSrcData,D3DSrcFormat,SrcPitch,NULL,&SrcRect,D3DX_FILTER_NONE,0);
 
 			uint32 iRefCnt = pDstSurface->Release();
+#else
+			pD3DDstTexture->LockRect((D3DCUBEMAP_FACES)i, iSrcLvl, &LockedRect, pRect, 0);
+			memcpy(LockedRect.pBits, pSrcData, pSrcMip->m_dataSize);
+			hResult = pD3DDstTexture->UnlockRect((D3DCUBEMAP_FACES)i, iSrcLvl);
+#endif
 			if (hResult != D3D_OK)
 				return false;
-
 			pSrcData += pSrcMip->m_dataSize;
 		}
-#endif
 	}
 	else
 	{
 		// Normal texture..
 		LPDIRECT3DTEXTURE9 pD3DDstTexture = pDstTexture->m_pD3DTexture;
 		uint8* pSrcData = pSrcMip->m_Data;
-		HRESULT hResult;
 #ifdef _WINDOWS
 		LPDIRECT3DSURFACE9 pDstSurface = nullptr;
 		pD3DDstTexture->GetSurfaceLevel(iDstLvl,&pDstSurface);
@@ -427,8 +431,6 @@ bool CTextureManager::UploadRTexture(TextureData* pSrcTexture, uint32 iSrcLvl, R
 
 		pDstSurface->Release();
 #else
-		RECT* pRect = nullptr;
-		D3DLOCKED_RECT LockedRect;
 		pD3DDstTexture->LockRect(iSrcLvl, &LockedRect, pRect, 0);
 		memcpy(LockedRect.pBits, pSrcData, pSrcMip->m_dataSize);
 		hResult = pD3DDstTexture->UnlockRect(iSrcLvl);
