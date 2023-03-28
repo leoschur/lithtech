@@ -9,8 +9,6 @@
 #include "d3d_shell.h"
 #include "colorops.h"
 #include "rendererframestats.h"
-#include <windows_base.h>
-#include <d3d9types.h>
 
 
 // Globals.
@@ -370,6 +368,7 @@ struct tex {
 	uint32 iDstLvl;
 	TextureMipData *pSrcMip;
 	D3DFORMAT D3DSrcFormat;
+	CTextureManager *ctm;
 };
 
 struct cube_tex : public tex {
@@ -390,13 +389,13 @@ HRESULT copyCubeTexture(const cube_tex& t )
 	SrcRect.right	= t.pSrcMip->m_Width;
 	SrcRect.bottom	= t.pSrcMip->m_Height;
 #ifdef _WINDOWS
-	uint32 SrcPitch = GetPitch(t.D3DSrcFormat,t.pSrcMip->m_Width);
+	uint32 SrcPitch = t.ctm->GetPitch(t.D3DSrcFormat,t.pSrcMip->m_Width);
 	LPDIRECT3DSURFACE9 pDstSurface = nullptr;
 	t.pD3DDstTexture->GetCubeMapSurface(t.i,t.iDstLvl,&pDstSurface);
 	if (!pDstSurface)
 		return S_FALSE;
 	HRESULT hResult;
-	LT_MEM_TRACK_ALLOC(hResult = D3DXLoadSurfaceFromMemory(pDstSurface,NULL,NULL,pSrcData,t.D3DSrcFormat,SrcPitch,NULL,&t.SrcRect,D3DX_FILTER_NONE,0), LT_MEM_TYPE_RENDERER);
+	LT_MEM_TRACK_ALLOC(hResult = D3DXLoadSurfaceFromMemory(pDstSurface,NULL,NULL,pSrcData,t.D3DSrcFormat,SrcPitch,NULL,&SrcRect,D3DX_FILTER_NONE,0), LT_MEM_TYPE_RENDERER);
 
 	pDstSurface->Release();
 	return hResult;
@@ -418,14 +417,14 @@ HRESULT copyNormalTexture(const norm_tex& t)
 	SrcRect.right	= t.pSrcMip->m_Width;
 	SrcRect.bottom	= t.pSrcMip->m_Height;
 #ifdef _WINDOWS
-	uint32 SrcPitch = GetPitch(t.D3DSrcFormat,t.pSrcMip->m_Width);
+	uint32 SrcPitch = t.ctm->GetPitch(t.D3DSrcFormat,t.pSrcMip->m_Width);
 	LPDIRECT3DSURFACE9 pDstSurface = nullptr;
 	t.pD3DDstTexture->GetSurfaceLevel(t.iDstLvl,&pDstSurface);
 	if (!pDstSurface) 
 		return S_FALSE;
 
 	HRESULT hResult;
-	LT_MEM_TRACK_ALLOC(hResult = D3DXLoadSurfaceFromMemory(pDstSurface,NULL,NULL,pSrcData,t.D3DSrcFormat,SrcPitch,NULL,&t.SrcRect,D3DX_FILTER_NONE,0), LT_MEM_TYPE_RENDERER);
+	LT_MEM_TRACK_ALLOC(hResult = D3DXLoadSurfaceFromMemory(pDstSurface,NULL,NULL,pSrcData,t.D3DSrcFormat,SrcPitch,NULL,&SrcRect,D3DX_FILTER_NONE,0), LT_MEM_TYPE_RENDERER);
 
 	pDstSurface->Release();
 	return hResult;
@@ -447,7 +446,8 @@ bool CTextureManager::UploadRTexture(TextureData* pSrcTexture, uint32 iSrcLvl, R
 		iSrcLvl,
 		iDstLvl,
 		&pSrcTexture->m_Mips[iSrcLvl],
-		QueryDDFormat1(pSrcTexture->m_Header.GetBPPIdent(), pSrcTexture->m_Header.m_IFlags)
+		QueryDDFormat1(pSrcTexture->m_Header.GetBPPIdent(), pSrcTexture->m_Header.m_IFlags),
+		this
 	};
 
 	if (pDstTexture->IsCubeMap())
