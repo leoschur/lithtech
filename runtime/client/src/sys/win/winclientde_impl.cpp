@@ -464,7 +464,8 @@ static LTRESULT cis_DoDrawSurfaceToSurface(HSURFACE hDest, HSURFACE hSrc,
 	}
 
 	bOk = false;
-	if(pSrcData = (uint8*)cis_LockSurface(pSrc, srcPitch))
+	pSrcData = static_cast<uint8*>(cis_LockSurface(pSrc, srcPitch));
+	if(pSrcData != nullptr)
 	{
 		if(pSrc == pDest)
 		{
@@ -473,15 +474,16 @@ static LTRESULT cis_DoDrawSurfaceToSurface(HSURFACE hDest, HSURFACE hSrc,
 		}
 		else
 		{
-			if(pDestData = (uint8*)cis_LockSurface(pDest, destPitch, true))
+			pDestData = static_cast<uint8*>(cis_LockSurface(pDest, destPitch));
+			if(pDestData != nullptr)
 			{
 				if(fn(false, pSrcData, pDestData, srcPitch, destPitch, &srcRect, &destRect) == LT_OK)
 					bOk = true;
-				
+
 				cis_UnlockSurface(pDest);
 			}
 		}
-		
+
 		cis_UnlockSurface(pSrc);
 	}
 
