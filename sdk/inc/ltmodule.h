@@ -267,7 +267,7 @@ typedef struct {
 #define SEARCH_MARKER_BASE "__search_marker"
 #define SEARCH_MARKER_INTERFACE SEARCH_MARKER_BASE "_interface__"
 #define SEARCH_MARKER_HOLDER SEARCH_MARKER_BASE "_holder__"
-#define SEARCH_MARKER_INT 0xfaceface
+#define SEARCH_MARKER_INT (int)0xfaceface
 
 //
 //

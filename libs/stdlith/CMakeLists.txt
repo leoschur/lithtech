@@ -1,6 +1,13 @@
+<<<<<<< Updated upstream
 project(LIB_StdLith)
 
 add_library(${PROJECT_NAME} STATIC
+=======
+cmake_minimum_required (VERSION 2.8)
+project (Lib_StdLith)
+add_compile_options(-fpermissive)
+add_library (Lib_StdLith STATIC 
+>>>>>>> Stashed changes
 	abstractio.cpp
 	dynarray.cpp
 	fileio.cpp

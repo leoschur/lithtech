@@ -48,7 +48,13 @@ if(ENABLE_D3D)
 	include_directories(sys/d3d)
 endif(ENABLE_D3D)
 
+<<<<<<< Updated upstream
 include_directories(src
+=======
+add_compile_options(-Wnarrowing)
+
+include_directories (src
+>>>>>>> Stashed changes
 	../../sdk/inc
 	../../libs/stdlith
 	../shared/src

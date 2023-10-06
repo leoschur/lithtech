@@ -74,6 +74,7 @@ CUIFont_Impl::CUIFont_Impl()
 	m_DefaultSlant				= 3;
 	m_DefaultBold				= 3;
 
+	// FIXME Platformspecific defined in sdk/inc/cuitypes.h (WIN32)
 	m_DefaultColors[0]			= CUI_DEFAULT_FONT_COLOR | CUI_SYSTEM_OPAQUE;
 	m_DefaultColors[1]			= CUI_DEFAULT_FONT_COLOR | CUI_SYSTEM_OPAQUE;
 	m_DefaultColors[2]			= CUI_DEFAULT_FONT_COLOR | CUI_SYSTEM_OPAQUE;

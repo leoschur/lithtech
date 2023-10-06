@@ -17,8 +17,8 @@
 
 // Includes...
 
-#include "..\dibmgr\dib.h"
-#include "..\dibmgr\dibpal.h"
+#include "dib.h"
+#include "dibpal.h"
 
 
 // Libs...

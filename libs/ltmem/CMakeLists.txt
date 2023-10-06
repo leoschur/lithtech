@@ -6,9 +6,14 @@ add_library(${PROJECT_NAME} STATIC
 	ltmemheap.cpp
 	ltmemstats.cpp
 	ltmemtrack.cpp
+<<<<<<< Updated upstream
 	StdAfx.cpp)
 
 include_directories(../../sdk/inc
+=======
+	stdafx.cpp)
+include_directories (../../sdk/inc
+>>>>>>> Stashed changes
 	../../runtime/shared/src
 	../../runtime/kernel/src
 	../stdlith

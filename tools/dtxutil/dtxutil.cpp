@@ -10,7 +10,11 @@
 
 #include "dtxutil.h"
 #include "Texture.h"
+#ifdef WIN32
 #include <direct.h>
+#else
+#include <unistd.h>
+#endif
 
 // I know, this looks bad but there's a need to share some of these functions
 // with dtxutil and it's a command line utility... getting that to compile was

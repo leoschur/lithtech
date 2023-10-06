@@ -117,6 +117,12 @@ if(BUILD_TRON)
 endif(BUILD_TRON)
 
 if(BUILD_TOOLS)
+<<<<<<< Updated upstream
 	add_subdirectory(tools/DtxView)			# TOOLS_DtxView
 	add_subdirectory(tools/LithRez)			# TOOLS_LithRez
 endif(BUILD_TOOLS)
+=======
+	add_subdirectory(tools)
+endif(BUILD_TOOLS)
+	
+>>>>>>> Stashed changes
